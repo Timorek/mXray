@@ -169,6 +169,71 @@ export class XrayCloudService {
     return this.graphql(mutation);
   }
 
+  async addTestsToTestExecution(issueId: string, testIssueIds: string[]) {
+    const ids = testIssueIds.map((id) => `"${id}"`).join(', ');
+    const mutation = `mutation {
+      addTestsToTestExecution(issueId: "${issueId}", testIssueIds: [${ids}]) {
+        addedTests
+        warning
+      }
+    }`;
+    return this.graphql(mutation);
+  }
+
+  async getTestExecution(issueId: string) {
+    const query = `{
+      getTestExecution(issueId: "${issueId}") {
+        issueId
+        tests(limit: 100) {
+          total
+          results {
+            issueId
+            testType { name }
+            jira(fields: ["key", "summary"])
+          }
+        }
+        jira(fields: ["key", "summary"])
+      }
+    }`;
+    type Result = { getTestExecution: Record<string, unknown> };
+    const data = await this.graphql<Result>(query);
+    return data.getTestExecution;
+  }
+
+  async getTestRun(testIssueId: string, testExecIssueId: string) {
+    const query = `{
+      getTestRun(testIssueId: "${testIssueId}", testExecIssueId: "${testExecIssueId}") {
+        id
+        status { name color description }
+        gherkin
+        steps {
+          action
+          data
+          result
+          status { name color }
+        }
+      }
+    }`;
+    type Result = { getTestRun: { id: string; status: { name: string } } | null };
+    const data = await this.graphql<Result>(query);
+    return data.getTestRun;
+  }
+
+  async updateTestRunStatus(testRunId: string, status: string) {
+    const mutation = `mutation {
+      updateTestRunStatus(id: "${testRunId}", status: "${status}")
+    }`;
+    return this.graphql(mutation);
+  }
+
+  async updateTestRunComment(testRunId: string, comment: string) {
+    const escaped = comment.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+    const mutation = `mutation {
+      updateTestRunComment(id: "${testRunId}", comment: "${escaped}")
+    }`;
+    return this.graphql(mutation);
+  }
+
   // ── REST Imports ────────────────────────────────────────────────────────
 
   async importExecutionResults(results: unknown) {

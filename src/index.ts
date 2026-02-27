@@ -11,6 +11,10 @@ import { createTestSchema, createTest } from './tools/tests/createTest.js';
 import { updateTestSchema, updateTest } from './tools/tests/updateTest.js';
 import { updateTestTypeSchema, updateTestType } from './tools/tests/updateTestType.js';
 import { updateGherkinTestDefinitionSchema, updateGherkinTestDefinition } from './tools/tests/updateGherkinTestDefinition.js';
+import { listTestExecutionsSchema, listTestExecutions } from './tools/test-executions/listTestExecutions.js';
+import { getTestExecutionSchema, getTestExecution } from './tools/test-executions/getTestExecution.js';
+import { createTestExecutionSchema, createTestExecution } from './tools/test-executions/createTestExecution.js';
+import { updateTestRunSchema, updateTestRun } from './tools/test-executions/updateTestRun.js';
 
 // ── Config ────────────────────────────────────────────────────────────────
 
@@ -99,6 +103,28 @@ server.registerTool('update_gherkin_test_definition', {
   description: 'Update the Gherkin scenario definition of a Cucumber test via GraphQL (requires Xray credentials).',
   inputSchema: updateGherkinTestDefinitionSchema,
 }, async (args) => updateGherkinTestDefinition(jiraClient, xrayService, args));
+
+// ── Test Executions Domain ────────────────────────────────────────────────
+
+server.registerTool('list_test_executions', {
+  description: 'List test executions in a Jira project.',
+  inputSchema: listTestExecutionsSchema,
+}, async (args) => listTestExecutions(jiraClient, args));
+
+server.registerTool('get_test_execution', {
+  description: 'Get details of a test execution, including associated test runs if Xray is configured.',
+  inputSchema: getTestExecutionSchema,
+}, async (args) => getTestExecution(jiraClient, xrayService, args));
+
+server.registerTool('create_test_execution', {
+  description: 'Create a new test execution in Jira. Optionally add tests to it (requires Xray credentials for adding tests).',
+  inputSchema: createTestExecutionSchema,
+}, async (args) => createTestExecution(jiraClient, xrayService, args));
+
+server.registerTool('update_test_run', {
+  description: 'Update the status and comment of a test run within a test execution (requires Xray credentials).',
+  inputSchema: updateTestRunSchema,
+}, async (args) => updateTestRun(jiraClient, xrayService, args));
 
 // ── Start ─────────────────────────────────────────────────────────────────
 
