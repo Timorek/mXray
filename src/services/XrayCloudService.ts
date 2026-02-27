@@ -73,9 +73,10 @@ export class XrayCloudService {
   private async graphql<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
     try {
       const headers = await this.authHeaders();
+      const body = variables ? { query, variables } : { query };
       const response = await this.httpClient.post<{ data: T; errors?: unknown[] }>(
         '/graphql',
-        { query, variables },
+        body,
         { headers },
       );
       if (response.data.errors) {
@@ -91,72 +92,81 @@ export class XrayCloudService {
   }
 
   async getTest(testKey: string) {
-    const query = `
-      query($jql: String!) {
-        getTests(jql: $jql, limit: 1) {
-          results {
-            issueId
-            testType { name kind }
-            gherkin
-            unstructured
-            jira(fields: ["key", "summary"])
-          }
+    const query = `{
+      getTests(jql: "key = ${testKey}", limit: 1) {
+        results {
+          issueId
+          testType { name kind }
+          gherkin
+          unstructured
+          jira(fields: ["key", "summary"])
         }
       }
-    `;
+    }`;
     type Result = { getTests: { results: Array<Record<string, unknown>> } };
-    const data = await this.graphql<Result>(query, { jql: `key = ${testKey}` });
+    const data = await this.graphql<Result>(query);
     return data.getTests.results[0] ?? null;
   }
 
   async getTestWithSteps(testKey: string) {
-    const query = `
-      query($jql: String!) {
-        getTests(jql: $jql, limit: 1) {
-          results {
-            issueId
-            testType { name kind }
-            steps { steps { id action data result } }
-            gherkin
-            unstructured
-            jira(fields: ["key", "summary"])
+    const query = `{
+      getTests(jql: "key = ${testKey}", limit: 1) {
+        results {
+          issueId
+          testType { name kind }
+          steps {
+            id
+            action
+            data
+            result
           }
+          gherkin
+          unstructured
+          jira(fields: ["key", "summary"])
         }
       }
-    `;
+    }`;
     type Result = { getTests: { results: Array<Record<string, unknown>> } };
-    const data = await this.graphql<Result>(query, { jql: `key = ${testKey}` });
+    const data = await this.graphql<Result>(query);
     return data.getTests.results[0] ?? null;
   }
 
   async updateTestType(issueId: string, testTypeName: string) {
-    const mutation = `
-      mutation($issueId: String!, $testType: UpdateTestTypeInput!) {
-        updateTestType(issueId: $issueId, testType: $testType)
+    const mutation = `mutation {
+      updateTestType(issueId: "${issueId}", testType: { name: "${testTypeName}" }) {
+        issueId
+        testType { name kind }
       }
-    `;
-    return this.graphql(mutation, { issueId, testType: { name: testTypeName } });
+    }`;
+    return this.graphql(mutation);
   }
 
   async updateGherkinTestDefinition(issueId: string, gherkin: string) {
-    const mutation = `
-      mutation($issueId: String!, $gherkin: String!) {
-        updateGherkinTestDefinition(issueId: $issueId, gherkin: $gherkin)
+    // Escape special characters for inline GraphQL string
+    const escaped = gherkin
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"')
+      .replace(/\r/g, '\\r')
+      .replace(/\n/g, '\\n')
+      .replace(/\t/g, '\\t');
+    const mutation = `mutation {
+      updateGherkinTestDefinition(issueId: "${issueId}", gherkin: "${escaped}") {
+        issueId
+        gherkin
       }
-    `;
-    return this.graphql(mutation, { issueId, gherkin });
+    }`;
+    return this.graphql(mutation);
   }
 
   async addTestsToTestSet(issueId: string, testIssueIds: string[]) {
-    const mutation = `
-      mutation($issueId: String!, $testIssueIds: [String!]!) {
-        addTestsToTestSet(issueId: $issueId, testIssueIds: $testIssueIds) {
-          addedTests
-          warning
-        }
+    const ids = testIssueIds.map((id) => `"${id}"`).join(', ');
+    const mutation = `mutation {
+      addTestsToTestSet(issueId: "${issueId}", testIssueIds: [${ids}]) {
+        addedTests
+        warning
       }
-    `;
-    return this.graphql(mutation, { issueId, testIssueIds });
+    }`;
+    return this.graphql(mutation);
   }
 
   // ── REST Imports ────────────────────────────────────────────────────────

@@ -4,6 +4,13 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import axios from 'axios';
 import { ConfigSchema } from './types.js';
 import { XrayCloudService } from './services/XrayCloudService.js';
+import { listTestsSchema, listTests } from './tools/tests/listTests.js';
+import { getTestSchema, getTest } from './tools/tests/getTest.js';
+import { getTestWithStepsSchema, getTestWithSteps } from './tools/tests/getTestWithSteps.js';
+import { createTestSchema, createTest } from './tools/tests/createTest.js';
+import { updateTestSchema, updateTest } from './tools/tests/updateTest.js';
+import { updateTestTypeSchema, updateTestType } from './tools/tests/updateTestType.js';
+import { updateGherkinTestDefinitionSchema, updateGherkinTestDefinition } from './tools/tests/updateGherkinTestDefinition.js';
 
 // ── Config ────────────────────────────────────────────────────────────────
 
@@ -55,6 +62,43 @@ const server = new McpServer({
 });
 
 // Tools will be registered here in subsequent phases
+
+// ── Tests Domain ──────────────────────────────────────────────────────────
+
+server.registerTool('list_tests', {
+  description: 'List tests in a Jira project. Supports filtering by labels and component.',
+  inputSchema: listTestsSchema,
+}, async (args) => listTests(jiraClient, args));
+
+server.registerTool('get_test', {
+  description: 'Get details of a specific test from Jira.',
+  inputSchema: getTestSchema,
+}, async (args) => getTest(jiraClient, args));
+
+server.registerTool('get_test_with_steps', {
+  description: 'Get test details including test steps from Xray (requires Xray credentials).',
+  inputSchema: getTestWithStepsSchema,
+}, async (args) => getTestWithSteps(xrayService, args));
+
+server.registerTool('create_test', {
+  description: 'Create a new test in Jira with specified type (Manual/Cucumber/Generic).',
+  inputSchema: createTestSchema,
+}, async (args) => createTest(jiraClient, args));
+
+server.registerTool('update_test', {
+  description: 'Update fields of an existing test in Jira.',
+  inputSchema: updateTestSchema,
+}, async (args) => updateTest(jiraClient, args));
+
+server.registerTool('update_test_type', {
+  description: 'Change the Xray test type (Manual/Cucumber/Generic) via GraphQL (requires Xray credentials).',
+  inputSchema: updateTestTypeSchema,
+}, async (args) => updateTestType(jiraClient, xrayService, args));
+
+server.registerTool('update_gherkin_test_definition', {
+  description: 'Update the Gherkin scenario definition of a Cucumber test via GraphQL (requires Xray credentials).',
+  inputSchema: updateGherkinTestDefinitionSchema,
+}, async (args) => updateGherkinTestDefinition(jiraClient, xrayService, args));
 
 // ── Start ─────────────────────────────────────────────────────────────────
 
