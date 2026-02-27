@@ -169,6 +169,57 @@ export class XrayCloudService {
     return this.graphql(mutation);
   }
 
+  async addTestsToTestPlan(issueId: string, testIssueIds: string[]) {
+    const ids = testIssueIds.map((id) => `"${id}"`).join(', ');
+    const mutation = `mutation {
+      addTestsToTestPlan(issueId: "${issueId}", testIssueIds: [${ids}]) {
+        addedTests
+        warning
+      }
+    }`;
+    return this.graphql(mutation);
+  }
+
+  async getTestPlan(issueId: string) {
+    const query = `{
+      getTestPlan(issueId: "${issueId}") {
+        issueId
+        tests(limit: 100) {
+          total
+          results {
+            issueId
+            testType { name }
+            jira(fields: ["key", "summary"])
+          }
+        }
+        jira(fields: ["key", "summary"])
+      }
+    }`;
+    type Result = { getTestPlan: Record<string, unknown> };
+    const data = await this.graphql<Result>(query);
+    return data.getTestPlan;
+  }
+
+  async getTestSet(issueId: string) {
+    const query = `{
+      getTestSet(issueId: "${issueId}") {
+        issueId
+        tests(limit: 100) {
+          total
+          results {
+            issueId
+            testType { name }
+            jira(fields: ["key", "summary"])
+          }
+        }
+        jira(fields: ["key", "summary"])
+      }
+    }`;
+    type Result = { getTestSet: Record<string, unknown> };
+    const data = await this.graphql<Result>(query);
+    return data.getTestSet;
+  }
+
   async addTestsToTestExecution(issueId: string, testIssueIds: string[]) {
     const ids = testIssueIds.map((id) => `"${id}"`).join(', ');
     const mutation = `mutation {

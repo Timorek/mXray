@@ -15,6 +15,13 @@ import { listTestExecutionsSchema, listTestExecutions } from './tools/test-execu
 import { getTestExecutionSchema, getTestExecution } from './tools/test-executions/getTestExecution.js';
 import { createTestExecutionSchema, createTestExecution } from './tools/test-executions/createTestExecution.js';
 import { updateTestRunSchema, updateTestRun } from './tools/test-executions/updateTestRun.js';
+import { listTestPlansSchema, listTestPlans } from './tools/test-plans/listTestPlans.js';
+import { getTestPlanSchema, getTestPlan } from './tools/test-plans/getTestPlan.js';
+import { createTestPlanSchema, createTestPlan } from './tools/test-plans/createTestPlan.js';
+import { addTestsToTestPlanSchema, addTestsToTestPlan } from './tools/test-plans/addTestsToTestPlan.js';
+import { listTestSetsSchema, listTestSets } from './tools/test-sets/listTestSets.js';
+import { getTestSetSchema, getTestSet } from './tools/test-sets/getTestSet.js';
+import { addTestsToTestSetSchema, addTestsToTestSet } from './tools/test-sets/addTestsToTestSet.js';
 
 // ── Config ────────────────────────────────────────────────────────────────
 
@@ -125,6 +132,45 @@ server.registerTool('update_test_run', {
   description: 'Update the status and comment of a test run within a test execution (requires Xray credentials).',
   inputSchema: updateTestRunSchema,
 }, async (args) => updateTestRun(jiraClient, xrayService, args));
+
+// ── Test Plans Domain ─────────────────────────────────────────────────────
+
+server.registerTool('list_test_plans', {
+  description: 'List test plans in a Jira project.',
+  inputSchema: listTestPlansSchema,
+}, async (args) => listTestPlans(jiraClient, args));
+
+server.registerTool('get_test_plan', {
+  description: 'Get details of a test plan, including associated tests if Xray is configured.',
+  inputSchema: getTestPlanSchema,
+}, async (args) => getTestPlan(jiraClient, xrayService, args));
+
+server.registerTool('create_test_plan', {
+  description: 'Create a new test plan in Jira.',
+  inputSchema: createTestPlanSchema,
+}, async (args) => createTestPlan(jiraClient, args));
+
+server.registerTool('add_tests_to_test_plan', {
+  description: 'Add tests to an existing test plan via Xray GraphQL (requires Xray credentials).',
+  inputSchema: addTestsToTestPlanSchema,
+}, async (args) => addTestsToTestPlan(jiraClient, xrayService, args));
+
+// ── Test Sets Domain ──────────────────────────────────────────────────────
+
+server.registerTool('list_test_sets', {
+  description: 'List test sets in a Jira project.',
+  inputSchema: listTestSetsSchema,
+}, async (args) => listTestSets(jiraClient, args));
+
+server.registerTool('get_test_set', {
+  description: 'Get details of a test set, including associated tests if Xray is configured.',
+  inputSchema: getTestSetSchema,
+}, async (args) => getTestSet(jiraClient, xrayService, args));
+
+server.registerTool('add_tests_to_test_set', {
+  description: 'Add tests to an existing test set via Xray GraphQL (requires Xray credentials).',
+  inputSchema: addTestsToTestSetSchema,
+}, async (args) => addTestsToTestSet(jiraClient, xrayService, args));
 
 // ── Start ─────────────────────────────────────────────────────────────────
 
