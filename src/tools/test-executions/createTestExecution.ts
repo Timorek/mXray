@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { AxiosInstance } from 'axios';
 import type { XrayCloudService } from '../../services/XrayCloudService.js';
 import type { MCPResponse } from '../../types.js';
+import { formatApiError } from '../../utils/errors.js';
 
 export const createTestExecutionSchema = {
   project_key: z.string().describe('Jira project key (e.g. "PROJ")'),
@@ -57,7 +58,7 @@ export async function createTestExecution(
       await xrayService.addTestsToTestExecution(executionId, testIssueIds);
       result.tests_added = args.test_keys;
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = formatApiError(error);
       result.tests_add_warning = `Tests created but failed to add tests: ${message}`;
     }
   }

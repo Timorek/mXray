@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="1" ignored="0" total="3" passed="2">
+  <reporter-output></reporter-output>
+  <suite name="LoginSuite" duration-ms="1500" started-at="2026-02-27T10:00:00Z" finished-at="2026-02-27T10:00:03Z">
+    <groups/>
+    <test name="LoginTests" duration-ms="1500" started-at="2026-02-27T10:00:00Z" finished-at="2026-02-27T10:00:03Z">
+      <class name="com.example.LoginTest">
+        <test-method status="PASS" signature="testValidLogin()" name="testValidLogin" is-config="false" duration-ms="500" started-at="2026-02-27T10:00:00Z" finished-at="2026-02-27T10:00:01Z">
+          <reporter-output></reporter-output>
+        </test-method>
+        <test-method status="PASS" signature="testLogout()" name="testLogout" is-config="false" duration-ms="300" started-at="2026-02-27T10:00:01Z" finished-at="2026-02-27T10:00:02Z">
+          <reporter-output></reporter-output>
+        </test-method>
+        <test-method status="FAIL" signature="testInvalidLogin()" name="testInvalidLogin" is-config="false" duration-ms="700" started-at="2026-02-27T10:00:02Z" finished-at="2026-02-27T10:00:03Z">
+          <exception class="java.lang.AssertionError">
+            <message><![CDATA[Expected error message not displayed]]></message>
+            <full-stacktrace><![CDATA[java.lang.AssertionError: Expected error message not displayed
+	at com.example.LoginTest.testInvalidLogin(LoginTest.java:42)]]></full-stacktrace>
+          </exception>
+          <reporter-output></reporter-output>
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

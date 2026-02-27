@@ -22,6 +22,14 @@ import { addTestsToTestPlanSchema, addTestsToTestPlan } from './tools/test-plans
 import { listTestSetsSchema, listTestSets } from './tools/test-sets/listTestSets.js';
 import { getTestSetSchema, getTestSet } from './tools/test-sets/getTestSet.js';
 import { addTestsToTestSetSchema, addTestsToTestSet } from './tools/test-sets/addTestsToTestSet.js';
+import { importExecutionResultsSchema, importExecutionResults } from './tools/import/importExecutionResults.js';
+import { importCucumberResultsSchema, importCucumberResults } from './tools/import/importCucumberResults.js';
+import { importJUnitResultsSchema, importJUnitResults } from './tools/import/importJUnitResults.js';
+import { importTestNGResultsSchema, importTestNGResults } from './tools/import/importTestNGResults.js';
+import { importNUnitResultsSchema, importNUnitResults } from './tools/import/importNUnitResults.js';
+import { importRobotResultsSchema, importRobotResults } from './tools/import/importRobotResults.js';
+import { importBehaveResultsSchema, importBehaveResults } from './tools/import/importBehaveResults.js';
+import { importFeatureFileSchema, importFeatureFile } from './tools/import/importFeatureFile.js';
 
 // ── Config ────────────────────────────────────────────────────────────────
 
@@ -171,6 +179,48 @@ server.registerTool('add_tests_to_test_set', {
   description: 'Add tests to an existing test set via Xray GraphQL (requires Xray credentials).',
   inputSchema: addTestsToTestSetSchema,
 }, async (args) => addTestsToTestSet(jiraClient, xrayService, args));
+
+// ── Import Domain ─────────────────────────────────────────────────────────
+
+server.registerTool('import_execution_results', {
+  description: 'Import test execution results in Xray JSON format (requires Xray credentials).',
+  inputSchema: importExecutionResultsSchema,
+}, async (args) => importExecutionResults(xrayService, args));
+
+server.registerTool('import_cucumber_results', {
+  description: 'Import Cucumber JSON test results (requires Xray credentials).',
+  inputSchema: importCucumberResultsSchema,
+}, async (args) => importCucumberResults(xrayService, args));
+
+server.registerTool('import_junit_results', {
+  description: 'Import JUnit XML test results (requires Xray credentials).',
+  inputSchema: importJUnitResultsSchema,
+}, async (args) => importJUnitResults(xrayService, args));
+
+server.registerTool('import_testng_results', {
+  description: 'Import TestNG XML test results (requires Xray credentials).',
+  inputSchema: importTestNGResultsSchema,
+}, async (args) => importTestNGResults(xrayService, args));
+
+server.registerTool('import_nunit_results', {
+  description: 'Import NUnit XML test results (requires Xray credentials).',
+  inputSchema: importNUnitResultsSchema,
+}, async (args) => importNUnitResults(xrayService, args));
+
+server.registerTool('import_robot_results', {
+  description: 'Import Robot Framework XML test results (requires Xray credentials).',
+  inputSchema: importRobotResultsSchema,
+}, async (args) => importRobotResults(xrayService, args));
+
+server.registerTool('import_behave_results', {
+  description: 'Import Behave JSON test results (requires Xray credentials).',
+  inputSchema: importBehaveResultsSchema,
+}, async (args) => importBehaveResults(xrayService, args));
+
+server.registerTool('import_feature_file', {
+  description: 'Import a Cucumber .feature file to create/update tests in Xray (requires Xray credentials).',
+  inputSchema: importFeatureFileSchema,
+}, async (args) => importFeatureFile(xrayService, args));
 
 // ── Start ─────────────────────────────────────────────────────────────────
 

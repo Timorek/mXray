@@ -1,0 +1,72 @@
+[
+  {
+    "id": "user-login",
+    "uri": "features/login.feature",
+    "name": "User Login",
+    "description": "",
+    "keyword": "Feature",
+    "tags": [{"name": "@XSP-79"}, {"name": "@XSP-80"}],
+    "elements": [
+      {
+        "id": "user-login;successful-login-with-valid-credentials",
+        "name": "Successful login with valid credentials",
+        "description": "",
+        "keyword": "Scenario",
+        "type": "scenario",
+        "tags": [{"name": "@XSP-79"}],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I am on the login page",
+            "result": { "status": "passed", "duration": 1000000 }
+          },
+          {
+            "keyword": "When ",
+            "name": "I enter username \"user@example.com\" and password \"password123\"",
+            "result": { "status": "passed", "duration": 500000 }
+          },
+          {
+            "keyword": "Then ",
+            "name": "I should be redirected to the dashboard",
+            "result": { "status": "passed", "duration": 300000 }
+          },
+          {
+            "keyword": "And ",
+            "name": "I should see the welcome message",
+            "result": { "status": "passed", "duration": 200000 }
+          }
+        ]
+      },
+      {
+        "id": "user-login;failed-login-with-invalid-credentials",
+        "name": "Failed login with invalid credentials",
+        "description": "",
+        "keyword": "Scenario",
+        "type": "scenario",
+        "tags": [{"name": "@XSP-80"}],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I am on the login page",
+            "result": { "status": "passed", "duration": 1000000 }
+          },
+          {
+            "keyword": "When ",
+            "name": "I enter username \"user@example.com\" and password \"wrongpassword\"",
+            "result": { "status": "passed", "duration": 500000 }
+          },
+          {
+            "keyword": "Then ",
+            "name": "I should see an error message \"Invalid credentials\"",
+            "result": { "status": "failed", "duration": 300000, "error_message": "Expected error message not found" }
+          },
+          {
+            "keyword": "And ",
+            "name": "I should remain on the login page",
+            "result": { "status": "skipped", "duration": 0 }
+          }
+        ]
+      }
+    ]
+  }
+]

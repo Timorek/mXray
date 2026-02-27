@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot Framework" generated="20260227 10:00:00.000">
+  <suite id="s1" name="Login Tests">
+    <test id="s1-t1" name="Valid Login Test">
+      <kw name="Open Browser" library="SeleniumLibrary">
+        <msg timestamp="20260227 10:00:00.100" level="INFO">Opening browser</msg>
+        <status status="PASS" starttime="20260227 10:00:00.100" endtime="20260227 10:00:00.600"/>
+      </kw>
+      <kw name="Input Credentials" library="LoginLibrary">
+        <msg timestamp="20260227 10:00:00.600" level="INFO">Entering credentials</msg>
+        <status status="PASS" starttime="20260227 10:00:00.600" endtime="20260227 10:00:00.900"/>
+      </kw>
+      <status status="PASS" starttime="20260227 10:00:00.100" endtime="20260227 10:00:00.900"/>
+    </test>
+    <test id="s1-t2" name="Invalid Login Test">
+      <kw name="Open Browser" library="SeleniumLibrary">
+        <msg timestamp="20260227 10:00:01.000" level="INFO">Opening browser</msg>
+        <status status="PASS" starttime="20260227 10:00:01.000" endtime="20260227 10:00:01.300"/>
+      </kw>
+      <kw name="Verify Error Message" library="LoginLibrary">
+        <msg timestamp="20260227 10:00:01.300" level="FAIL">Expected error message not found</msg>
+        <status status="FAIL" starttime="20260227 10:00:01.300" endtime="20260227 10:00:01.700"/>
+      </kw>
+      <status status="FAIL" starttime="20260227 10:00:01.000" endtime="20260227 10:00:01.700">Expected error message not found</status>
+    </test>
+    <status status="FAIL" starttime="20260227 10:00:00.100" endtime="20260227 10:00:01.700"/>
+  </suite>
+  <statistics>
+    <total>
+      <stat pass="1" fail="1">All Tests</stat>
+    </total>
+  </statistics>
+</robot>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="0" testcasecount="3" result="Failed" total="3" passed="2" failed="1" inconclusive="0" skipped="0" asserts="3" engine-version="3.16.3" clr-version="4.0.30319.42000" start-time="2026-02-27 10:00:00Z" end-time="2026-02-27 10:00:03Z" duration="3.0">
+  <test-suite type="Assembly" id="1" name="LoginTests.dll" fullname="LoginTests.dll" runstate="Runnable" testcasecount="3" result="Failed" total="3" passed="2" failed="1" inconclusive="0" skipped="0" asserts="3" start-time="2026-02-27 10:00:00Z" end-time="2026-02-27 10:00:03Z" duration="3.0">
+    <test-suite type="TestFixture" id="2" name="LoginTests" fullname="LoginTests.LoginTests" classname="LoginTests.LoginTests" runstate="Runnable" testcasecount="3" result="Failed" total="3" passed="2" failed="1" inconclusive="0" skipped="0" asserts="3" start-time="2026-02-27 10:00:00Z" end-time="2026-02-27 10:00:03Z" duration="3.0">
+      <test-case id="3" name="testValidLogin" fullname="LoginTests.LoginTests.testValidLogin" methodname="testValidLogin" classname="LoginTests.LoginTests" runstate="Runnable" seed="12345" result="Passed" start-time="2026-02-27 10:00:00Z" end-time="2026-02-27 10:00:01Z" duration="0.5" asserts="1" />
+      <test-case id="4" name="testLogout" fullname="LoginTests.LoginTests.testLogout" methodname="testLogout" classname="LoginTests.LoginTests" runstate="Runnable" seed="12346" result="Passed" start-time="2026-02-27 10:00:01Z" end-time="2026-02-27 10:00:02Z" duration="0.3" asserts="1" />
+      <test-case id="5" name="testInvalidLogin" fullname="LoginTests.LoginTests.testInvalidLogin" methodname="testInvalidLogin" classname="LoginTests.LoginTests" runstate="Runnable" seed="12347" result="Failed" start-time="2026-02-27 10:00:02Z" end-time="2026-02-27 10:00:03Z" duration="0.7" asserts="1">
+        <failure>
+          <message><![CDATA[Expected error message not displayed]]></message>
+          <stack-trace><![CDATA[at LoginTests.LoginTests.testInvalidLogin() in LoginTests.cs:line 42]]></stack-trace>
+        </failure>
+      </test-case>
+    </test-suite>
+  </test-suite>
+</test-run>

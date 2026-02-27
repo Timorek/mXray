@@ -1,0 +1,67 @@
+[
+  {
+    "keyword": "Feature",
+    "name": "User Login",
+    "description": "",
+    "location": "features/login.feature:1",
+    "status": "failed",
+    "elements": [
+      {
+        "keyword": "Scenario",
+        "name": "Successful login with valid credentials",
+        "description": "",
+        "location": "features/login.feature:3",
+        "status": "passed",
+        "tags": ["XSP-79"],
+        "steps": [
+          {
+            "keyword": "Given",
+            "name": "I am on the login page",
+            "location": "features/login.feature:4",
+            "result": { "status": "passed", "duration": 1.0 }
+          },
+          {
+            "keyword": "When",
+            "name": "I enter username \"user@example.com\" and password \"password123\"",
+            "location": "features/login.feature:5",
+            "result": { "status": "passed", "duration": 0.5 }
+          },
+          {
+            "keyword": "Then",
+            "name": "I should be redirected to the dashboard",
+            "location": "features/login.feature:6",
+            "result": { "status": "passed", "duration": 0.3 }
+          }
+        ]
+      },
+      {
+        "keyword": "Scenario",
+        "name": "Failed login with invalid credentials",
+        "description": "",
+        "location": "features/login.feature:9",
+        "status": "failed",
+        "tags": ["XSP-80"],
+        "steps": [
+          {
+            "keyword": "Given",
+            "name": "I am on the login page",
+            "location": "features/login.feature:10",
+            "result": { "status": "passed", "duration": 1.0 }
+          },
+          {
+            "keyword": "When",
+            "name": "I enter username \"user@example.com\" and password \"wrongpassword\"",
+            "location": "features/login.feature:11",
+            "result": { "status": "passed", "duration": 0.5 }
+          },
+          {
+            "keyword": "Then",
+            "name": "I should see an error message \"Invalid credentials\"",
+            "location": "features/login.feature:12",
+            "result": { "status": "failed", "duration": 0.3, "error_message": "Expected error message not found" }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { AxiosInstance } from 'axios';
 import type { XrayCloudService } from '../../services/XrayCloudService.js';
 import type { MCPResponse } from '../../types.js';
+import { formatApiError } from '../../utils/errors.js';
 
 export const addTestsToTestSetSchema = {
   set_key: z.string().describe('Jira issue key of the test set (e.g. "PROJ-200")'),
@@ -42,7 +43,7 @@ export async function addTestsToTestSet(
       }, null, 2) }],
     };
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = formatApiError(error);
     return {
       content: [{ type: 'text', text: `Error adding tests to test set: ${message}` }],
     };

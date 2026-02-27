@@ -289,82 +289,171 @@ export class XrayCloudService {
 
   async importExecutionResults(results: unknown) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.post('/import/execution', results, {
-      headers: { ...headers, 'Content-Type': 'application/json' },
-    });
-    return response.data;
+    try {
+      const response = await this.httpClient.post('/import/execution', results, {
+        headers: { ...headers, 'Content-Type': 'application/json' },
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 
-  async importCucumberResults(results: unknown) {
+  async importCucumberResults(results: unknown, projectKey?: string) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.post('/import/execution/cucumber', results, {
-      headers: { ...headers, 'Content-Type': 'application/json' },
+    const boundary = '----XrayCucumberImport' + Date.now();
+    const jsonStr = typeof results === 'string' ? results : JSON.stringify(results);
+    const info = JSON.stringify({
+      fields: {
+        project: { key: projectKey ?? 'DEFAULT' },
+        summary: 'Cucumber Test Execution',
+        issuetype: { name: 'Test Execution' },
+      },
     });
-    return response.data;
+    const body =
+      `--${boundary}\r\n` +
+      `Content-Disposition: form-data; name="results"; filename="results.json"\r\n` +
+      `Content-Type: application/json\r\n\r\n` +
+      jsonStr + `\r\n` +
+      `--${boundary}\r\n` +
+      `Content-Disposition: form-data; name="info"; filename="info.json"\r\n` +
+      `Content-Type: application/json\r\n\r\n` +
+      info + `\r\n` +
+      `--${boundary}--\r\n`;
+    try {
+      const response = await this.httpClient.post('/import/execution/cucumber/multipart', body, {
+        headers: { ...headers, 'Content-Type': `multipart/form-data; boundary=${boundary}` },
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 
   async importJUnitResults(xmlContent: string, queryParams?: Record<string, string>) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.post('/import/execution/junit', xmlContent, {
-      headers: { ...headers, 'Content-Type': 'text/xml' },
-      params: queryParams,
-    });
-    return response.data;
+    try {
+      const response = await this.httpClient.post('/import/execution/junit', xmlContent, {
+        headers: { ...headers, 'Content-Type': 'text/xml' },
+        params: queryParams,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 
   async importTestNGResults(xmlContent: string, queryParams?: Record<string, string>) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.post('/import/execution/testng', xmlContent, {
-      headers: { ...headers, 'Content-Type': 'text/xml' },
-      params: queryParams,
-    });
-    return response.data;
+    try {
+      const response = await this.httpClient.post('/import/execution/testng', xmlContent, {
+        headers: { ...headers, 'Content-Type': 'text/xml' },
+        params: queryParams,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 
   async importNUnitResults(xmlContent: string, queryParams?: Record<string, string>) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.post('/import/execution/nunit', xmlContent, {
-      headers: { ...headers, 'Content-Type': 'text/xml' },
-      params: queryParams,
-    });
-    return response.data;
+    try {
+      const response = await this.httpClient.post('/import/execution/nunit', xmlContent, {
+        headers: { ...headers, 'Content-Type': 'text/xml' },
+        params: queryParams,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 
   async importRobotResults(xmlContent: string, queryParams?: Record<string, string>) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.post('/import/execution/robot', xmlContent, {
-      headers: { ...headers, 'Content-Type': 'text/xml' },
-      params: queryParams,
-    });
-    return response.data;
+    try {
+      const response = await this.httpClient.post('/import/execution/robot', xmlContent, {
+        headers: { ...headers, 'Content-Type': 'text/xml' },
+        params: queryParams,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 
   async importBehaveResults(results: unknown) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.post('/import/execution/behave', results, {
-      headers: { ...headers, 'Content-Type': 'application/json' },
-    });
-    return response.data;
+    try {
+      const response = await this.httpClient.post('/import/execution/behave', results, {
+        headers: { ...headers, 'Content-Type': 'application/json' },
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 
   async importFeatureFile(featureContent: string, queryParams?: Record<string, string>) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.post('/import/feature', featureContent, {
-      headers: { ...headers, 'Content-Type': 'text/plain' },
-      params: queryParams,
-    });
-    return response.data;
+    const boundary = '----XrayFeatureImport' + Date.now();
+    const body =
+      `--${boundary}\r\n` +
+      `Content-Disposition: form-data; name="file"; filename="import.feature"\r\n` +
+      `Content-Type: text/plain\r\n\r\n` +
+      featureContent + `\r\n` +
+      `--${boundary}--\r\n`;
+    try {
+      const response = await this.httpClient.post('/import/feature', body, {
+        headers: { ...headers, 'Content-Type': `multipart/form-data; boundary=${boundary}` },
+        params: queryParams,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 
   // ── REST Export ─────────────────────────────────────────────────────────
 
   async exportCucumberFeatures(testKeys?: string) {
     const headers = await this.authHeaders();
-    const response = await this.httpClient.get('/export/cucumber', {
-      headers,
-      params: testKeys ? { keys: testKeys } : undefined,
-      responseType: 'arraybuffer',
-    });
-    return response.data;
+    try {
+      const response = await this.httpClient.get('/export/cucumber', {
+        headers,
+        params: testKeys ? { keys: testKeys } : undefined,
+        responseType: 'arraybuffer',
+      });
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
   }
 }
