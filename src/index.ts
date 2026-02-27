@@ -30,6 +30,7 @@ import { importNUnitResultsSchema, importNUnitResults } from './tools/import/imp
 import { importRobotResultsSchema, importRobotResults } from './tools/import/importRobotResults.js';
 import { importBehaveResultsSchema, importBehaveResults } from './tools/import/importBehaveResults.js';
 import { importFeatureFileSchema, importFeatureFile } from './tools/import/importFeatureFile.js';
+import { exportCucumberFeaturesSchema, exportCucumberFeatures } from './tools/export/exportCucumberFeatures.js';
 
 // ── Config ────────────────────────────────────────────────────────────────
 
@@ -221,6 +222,13 @@ server.registerTool('import_feature_file', {
   description: 'Import a Cucumber .feature file to create/update tests in Xray (requires Xray credentials).',
   inputSchema: importFeatureFileSchema,
 }, async (args) => importFeatureFile(xrayService, args));
+
+// ── Export Domain ─────────────────────────────────────────────────────
+
+server.registerTool('export_cucumber_features', {
+  description: 'Export Cucumber feature files from Xray. Can export all features or specific test keys (requires Xray credentials).',
+  inputSchema: exportCucumberFeaturesSchema,
+}, async (args) => exportCucumberFeatures(xrayService, args));
 
 // ── Start ─────────────────────────────────────────────────────────────────
 
