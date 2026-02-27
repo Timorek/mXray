@@ -22,6 +22,7 @@ import { addTestsToTestPlanSchema, addTestsToTestPlan } from './tools/test-plans
 import { listTestSetsSchema, listTestSets } from './tools/test-sets/listTestSets.js';
 import { getTestSetSchema, getTestSet } from './tools/test-sets/getTestSet.js';
 import { addTestsToTestSetSchema, addTestsToTestSet } from './tools/test-sets/addTestsToTestSet.js';
+import { createTestSetSchema, createTestSet } from './tools/test-sets/createTestSet.js';
 import { importExecutionResultsSchema, importExecutionResults } from './tools/import/importExecutionResults.js';
 import { importCucumberResultsSchema, importCucumberResults } from './tools/import/importCucumberResults.js';
 import { importJUnitResultsSchema, importJUnitResults } from './tools/import/importJUnitResults.js';
@@ -180,6 +181,11 @@ server.registerTool('add_tests_to_test_set', {
   description: 'Add tests to an existing test set via Xray GraphQL (requires Xray credentials).',
   inputSchema: addTestsToTestSetSchema,
 }, async (args) => addTestsToTestSet(jiraClient, xrayService, args));
+
+server.registerTool('create_test_set', {
+  description: 'Create a new test set in Jira.',
+  inputSchema: createTestSetSchema,
+}, async (args) => createTestSet(jiraClient, args));
 
 // ── Import Domain ─────────────────────────────────────────────────────────
 
