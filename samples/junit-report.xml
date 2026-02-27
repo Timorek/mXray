@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Sample Test Suite" tests="3" failures="1" errors="0" skipped="1" time="0.542">
+  <testsuite name="com.example.LoginTest" tests="3" failures="1" errors="0" skipped="1" time="0.542">
+    <testcase classname="com.example.LoginTest" name="testValidLogin" time="0.312">
+    </testcase>
+    <testcase classname="com.example.LoginTest" name="testInvalidPassword" time="0.198">
+      <failure message="Expected status 401 but got 500" type="AssertionError">
+java.lang.AssertionError: Expected status 401 but got 500
+	at com.example.LoginTest.testInvalidPassword(LoginTest.java:42)
+      </failure>
+    </testcase>
+    <testcase classname="com.example.LoginTest" name="testPasswordReset" time="0.032">
+      <skipped message="Password reset feature not yet implemented"/>
+    </testcase>
+  </testsuite>
+</testsuites>
