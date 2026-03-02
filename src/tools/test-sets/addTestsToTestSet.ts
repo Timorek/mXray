@@ -25,12 +25,13 @@ export async function addTestsToTestSet(
     const setResponse = await jiraClient.get(`/issue/${args.set_key}`, { params: { fields: 'summary' } });
     const setIssueId = setResponse.data.id;
 
-    // Resolve test keys to issue IDs
-    const testIssueIds: string[] = [];
-    for (const testKey of args.test_keys) {
-      const testResponse = await jiraClient.get(`/issue/${testKey}`, { params: { fields: 'summary' } });
-      testIssueIds.push(testResponse.data.id);
-    }
+    // Resolve test keys to issue IDs in parallel
+    const testIssueIds = await Promise.all(
+      args.test_keys.map(async (testKey) => {
+        const testResponse = await jiraClient.get(`/issue/${testKey}`, { params: { fields: 'summary' } });
+        return testResponse.data.id as string;
+      }),
+    );
 
     const result = await xrayService.addTestsToTestSet(setIssueId, testIssueIds) as Record<string, unknown>;
 

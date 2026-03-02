@@ -56,7 +56,7 @@ const config = configResult.data;
 const jiraToken = Buffer.from(`${config.JIRA_EMAIL}:${config.JIRA_API_TOKEN}`).toString('base64');
 
 export const jiraClient = axios.create({
-  baseURL: `${config.JIRA_BASE_URL}/rest/api/3`,
+  baseURL: `${config.JIRA_BASE_URL.replace(/\/$/, '')}/rest/api/3`,
   headers: {
     Authorization: `Basic ${jiraToken}`,
     'Content-Type': 'application/json',

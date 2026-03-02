@@ -49,12 +49,13 @@ export async function createTestExecution(
     // Add tests to the execution via Xray GraphQL if test_keys provided
     if (args.test_keys && args.test_keys.length > 0 && xrayService) {
       try {
-        // Resolve test keys to issue IDs
-        const testIssueIds: string[] = [];
-        for (const testKey of args.test_keys) {
-          const issueResponse = await jiraClient.get(`/issue/${testKey}`, { params: { fields: 'summary' } });
-          testIssueIds.push(issueResponse.data.id);
-        }
+        // Resolve test keys to issue IDs in parallel
+        const testIssueIds = await Promise.all(
+          args.test_keys.map(async (testKey) => {
+            const issueResponse = await jiraClient.get(`/issue/${testKey}`, { params: { fields: 'summary' } });
+            return issueResponse.data.id as string;
+          }),
+        );
 
         await xrayService.addTestsToTestExecution(executionId, testIssueIds);
         result.tests_added = args.test_keys;
