@@ -7,3 +7,6 @@ dist/
 *.js.map
 .DS_Store
 .env
+REVIEW.md
+STATUS.md
+.env.*

@@ -16,6 +16,7 @@ export type Config = z.infer<typeof ConfigSchema>;
 
 export type MCPResponse = {
   content: Array<{ type: 'text'; text: string }>;
+  isError?: boolean;
 };
 
 // ── Enums ───────────────────────────────────────────────────────────────────

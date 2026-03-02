@@ -2,8 +2,10 @@ import { z } from 'zod';
 import type { AxiosInstance } from 'axios';
 import type { MCPResponse } from '../../types.js';
 
+const PROJECT_KEY_PATTERN = /^[A-Z][A-Z0-9_]*$/;
+
 export const listTestSetsSchema = {
-  project_key: z.string().describe('Jira project key (e.g. "PROJ")'),
+  project_key: z.string().regex(/^[A-Z][A-Z0-9_]*$/, 'Invalid project_key format. Must be uppercase letters, digits, underscores (e.g. "PROJ")').describe('Jira project key (e.g. "PROJ")'),
   max_results: z.number().optional().default(50).describe('Maximum number of results (default 50)'),
 };
 
@@ -11,6 +13,13 @@ export async function listTestSets(
   jiraClient: AxiosInstance,
   args: { project_key: string; max_results?: number },
 ): Promise<MCPResponse> {
+  if (!PROJECT_KEY_PATTERN.test(args.project_key)) {
+    return {
+      content: [{ type: 'text', text: 'Error: Invalid project_key format. Must match pattern: ^[A-Z][A-Z0-9_]*$' }],
+      isError: true,
+    };
+  }
+
   const jql = `project = "${args.project_key}" AND issuetype = "Test Set"`;
   const maxResults = args.max_results ?? 50;
 

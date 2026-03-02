@@ -51,6 +51,7 @@ if (!configResult.success) {
 const config = configResult.data;
 
 // ── Jira Axios Instance ───────────────────────────────────────────────────
+// Note: Basic Auth token is computed at startup. Credential rotation requires server restart.
 
 const jiraToken = Buffer.from(`${config.JIRA_EMAIL}:${config.JIRA_API_TOKEN}`).toString('base64');
 

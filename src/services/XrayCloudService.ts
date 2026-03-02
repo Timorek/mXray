@@ -92,8 +92,8 @@ export class XrayCloudService {
   }
 
   async getTest(testKey: string) {
-    const query = `{
-      getTests(jql: "key = ${testKey}", limit: 1) {
+    const query = `query GetTest($jql: String!) {
+      getTests(jql: $jql, limit: 1) {
         results {
           issueId
           testType { name kind }
@@ -104,13 +104,13 @@ export class XrayCloudService {
       }
     }`;
     type Result = { getTests: { results: Array<Record<string, unknown>> } };
-    const data = await this.graphql<Result>(query);
+    const data = await this.graphql<Result>(query, { jql: `key = ${testKey}` });
     return data.getTests.results[0] ?? null;
   }
 
   async getTestWithSteps(testKey: string) {
-    const query = `{
-      getTests(jql: "key = ${testKey}", limit: 1) {
+    const query = `query GetTestWithSteps($jql: String!) {
+      getTests(jql: $jql, limit: 1) {
         results {
           issueId
           testType { name kind }
@@ -127,62 +127,53 @@ export class XrayCloudService {
       }
     }`;
     type Result = { getTests: { results: Array<Record<string, unknown>> } };
-    const data = await this.graphql<Result>(query);
+    const data = await this.graphql<Result>(query, { jql: `key = ${testKey}` });
     return data.getTests.results[0] ?? null;
   }
 
   async updateTestType(issueId: string, testTypeName: string) {
-    const mutation = `mutation {
-      updateTestType(issueId: "${issueId}", testType: { name: "${testTypeName}" }) {
+    const mutation = `mutation UpdateTestType($issueId: String!, $testType: UpdateTestTypeInput!) {
+      updateTestType(issueId: $issueId, testType: $testType) {
         issueId
         testType { name kind }
       }
     }`;
-    return this.graphql(mutation);
+    return this.graphql(mutation, { issueId, testType: { name: testTypeName } });
   }
 
   async updateGherkinTestDefinition(issueId: string, gherkin: string) {
-    // Escape special characters for inline GraphQL string
-    const escaped = gherkin
-      .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"')
-      .replace(/\r/g, '\\r')
-      .replace(/\n/g, '\\n')
-      .replace(/\t/g, '\\t');
-    const mutation = `mutation {
-      updateGherkinTestDefinition(issueId: "${issueId}", gherkin: "${escaped}") {
+    const mutation = `mutation UpdateGherkinTestDefinition($issueId: String!, $gherkin: String!) {
+      updateGherkinTestDefinition(issueId: $issueId, gherkin: $gherkin) {
         issueId
         gherkin
       }
     }`;
-    return this.graphql(mutation);
+    return this.graphql(mutation, { issueId, gherkin });
   }
 
   async addTestsToTestSet(issueId: string, testIssueIds: string[]) {
-    const ids = testIssueIds.map((id) => `"${id}"`).join(', ');
-    const mutation = `mutation {
-      addTestsToTestSet(issueId: "${issueId}", testIssueIds: [${ids}]) {
+    const mutation = `mutation AddTestsToTestSet($issueId: String!, $testIssueIds: [String!]!) {
+      addTestsToTestSet(issueId: $issueId, testIssueIds: $testIssueIds) {
         addedTests
         warning
       }
     }`;
-    return this.graphql(mutation);
+    return this.graphql(mutation, { issueId, testIssueIds });
   }
 
   async addTestsToTestPlan(issueId: string, testIssueIds: string[]) {
-    const ids = testIssueIds.map((id) => `"${id}"`).join(', ');
-    const mutation = `mutation {
-      addTestsToTestPlan(issueId: "${issueId}", testIssueIds: [${ids}]) {
+    const mutation = `mutation AddTestsToTestPlan($issueId: String!, $testIssueIds: [String!]!) {
+      addTestsToTestPlan(issueId: $issueId, testIssueIds: $testIssueIds) {
         addedTests
         warning
       }
     }`;
-    return this.graphql(mutation);
+    return this.graphql(mutation, { issueId, testIssueIds });
   }
 
   async getTestPlan(issueId: string) {
-    const query = `{
-      getTestPlan(issueId: "${issueId}") {
+    const query = `query GetTestPlan($issueId: String!) {
+      getTestPlan(issueId: $issueId) {
         issueId
         tests(limit: 100) {
           total
@@ -196,13 +187,13 @@ export class XrayCloudService {
       }
     }`;
     type Result = { getTestPlan: Record<string, unknown> };
-    const data = await this.graphql<Result>(query);
+    const data = await this.graphql<Result>(query, { issueId });
     return data.getTestPlan;
   }
 
   async getTestSet(issueId: string) {
-    const query = `{
-      getTestSet(issueId: "${issueId}") {
+    const query = `query GetTestSet($issueId: String!) {
+      getTestSet(issueId: $issueId) {
         issueId
         tests(limit: 100) {
           total
@@ -216,24 +207,23 @@ export class XrayCloudService {
       }
     }`;
     type Result = { getTestSet: Record<string, unknown> };
-    const data = await this.graphql<Result>(query);
+    const data = await this.graphql<Result>(query, { issueId });
     return data.getTestSet;
   }
 
   async addTestsToTestExecution(issueId: string, testIssueIds: string[]) {
-    const ids = testIssueIds.map((id) => `"${id}"`).join(', ');
-    const mutation = `mutation {
-      addTestsToTestExecution(issueId: "${issueId}", testIssueIds: [${ids}]) {
+    const mutation = `mutation AddTestsToTestExecution($issueId: String!, $testIssueIds: [String!]!) {
+      addTestsToTestExecution(issueId: $issueId, testIssueIds: $testIssueIds) {
         addedTests
         warning
       }
     }`;
-    return this.graphql(mutation);
+    return this.graphql(mutation, { issueId, testIssueIds });
   }
 
   async getTestExecution(issueId: string) {
-    const query = `{
-      getTestExecution(issueId: "${issueId}") {
+    const query = `query GetTestExecution($issueId: String!) {
+      getTestExecution(issueId: $issueId) {
         issueId
         tests(limit: 100) {
           total
@@ -247,13 +237,13 @@ export class XrayCloudService {
       }
     }`;
     type Result = { getTestExecution: Record<string, unknown> };
-    const data = await this.graphql<Result>(query);
+    const data = await this.graphql<Result>(query, { issueId });
     return data.getTestExecution;
   }
 
   async getTestRun(testIssueId: string, testExecIssueId: string) {
-    const query = `{
-      getTestRun(testIssueId: "${testIssueId}", testExecIssueId: "${testExecIssueId}") {
+    const query = `query GetTestRun($testIssueId: String!, $testExecIssueId: String!) {
+      getTestRun(testIssueId: $testIssueId, testExecIssueId: $testExecIssueId) {
         id
         status { name color description }
         gherkin
@@ -266,23 +256,22 @@ export class XrayCloudService {
       }
     }`;
     type Result = { getTestRun: { id: string; status: { name: string } } | null };
-    const data = await this.graphql<Result>(query);
+    const data = await this.graphql<Result>(query, { testIssueId, testExecIssueId });
     return data.getTestRun;
   }
 
   async updateTestRunStatus(testRunId: string, status: string) {
-    const mutation = `mutation {
-      updateTestRunStatus(id: "${testRunId}", status: "${status}")
+    const mutation = `mutation UpdateTestRunStatus($id: String!, $status: String!) {
+      updateTestRunStatus(id: $id, status: $status)
     }`;
-    return this.graphql(mutation);
+    return this.graphql(mutation, { id: testRunId, status });
   }
 
   async updateTestRunComment(testRunId: string, comment: string) {
-    const escaped = comment.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
-    const mutation = `mutation {
-      updateTestRunComment(id: "${testRunId}", comment: "${escaped}")
+    const mutation = `mutation UpdateTestRunComment($id: String!, $comment: String!) {
+      updateTestRunComment(id: $id, comment: $comment)
     }`;
-    return this.graphql(mutation);
+    return this.graphql(mutation, { id: testRunId, comment });
   }
 
   // ── REST Imports ────────────────────────────────────────────────────────
@@ -451,7 +440,11 @@ export class XrayCloudService {
       return response.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
-        throw new Error(`Xray API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+        const data = error.response.data;
+        const message = Buffer.isBuffer(data)
+          ? data.toString('utf-8')
+          : (data instanceof ArrayBuffer ? Buffer.from(new Uint8Array(data)).toString('utf-8') : JSON.stringify(data));
+        throw new Error(`Xray API error ${error.response.status}: ${message}`);
       }
       throw error;
     }
