@@ -83,8 +83,6 @@ const server = new McpServer({
   version: '0.1.0',
 });
 
-// Tools will be registered here in subsequent phases
-
 // ── Tests Domain ──────────────────────────────────────────────────────────
 
 server.registerTool('list_tests', {

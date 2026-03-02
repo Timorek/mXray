@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { AxiosInstance } from 'axios';
 import type { MCPResponse } from '../../types.js';
+import { formatApiError } from '../../utils/errors.js';
 
 const PROJECT_KEY_PATTERN = /^[A-Z][A-Z0-9_]*$/;
 
@@ -26,36 +27,43 @@ export async function listTests(
     };
   }
 
-  let jql = `project = "${args.project_key}" AND issuetype = Test`;
+  try {
+    let jql = `project = "${args.project_key}" AND issuetype = Test`;
 
-  if (args.labels && args.labels.length > 0) {
-    const labelFilter = args.labels.map((l) => `"${sanitizeJqlValue(l)}"`).join(', ');
-    jql += ` AND labels IN (${labelFilter})`;
+    if (args.labels && args.labels.length > 0) {
+      const labelFilter = args.labels.map((l) => `"${sanitizeJqlValue(l)}"`).join(', ');
+      jql += ` AND labels IN (${labelFilter})`;
+    }
+
+    if (args.component) {
+      jql += ` AND component = "${sanitizeJqlValue(args.component)}"`;
+    }
+
+    const maxResults = args.max_results ?? 50;
+
+    const response = await jiraClient.post('/search/jql', {
+      jql,
+      maxResults,
+      fields: ['summary', 'status', 'labels', 'components', 'issuetype'],
+    });
+
+    const { issues, total } = response.data;
+
+    const tests = issues.map((issue: { key: string; fields: { summary: string; status: { name: string }; labels?: string[]; components?: Array<{ name: string }> } }) => ({
+      key: issue.key,
+      summary: issue.fields.summary,
+      status: issue.fields.status.name,
+      labels: issue.fields.labels ?? [],
+      components: (issue.fields.components ?? []).map((c: { name: string }) => c.name),
+    }));
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify({ total, count: tests.length, tests }, null, 2) }],
+    };
+  } catch (error: unknown) {
+    return {
+      content: [{ type: 'text', text: formatApiError(error) }],
+      isError: true,
+    };
   }
-
-  if (args.component) {
-    jql += ` AND component = "${sanitizeJqlValue(args.component)}"`;
-  }
-
-  const maxResults = args.max_results ?? 50;
-
-  const response = await jiraClient.post('/search/jql', {
-    jql,
-    maxResults,
-    fields: ['summary', 'status', 'labels', 'components', 'issuetype'],
-  });
-
-  const { issues, total } = response.data;
-
-  const tests = issues.map((issue: { key: string; fields: { summary: string; status: { name: string }; labels?: string[]; components?: Array<{ name: string }> } }) => ({
-    key: issue.key,
-    summary: issue.fields.summary,
-    status: issue.fields.status.name,
-    labels: issue.fields.labels ?? [],
-    components: (issue.fields.components ?? []).map((c: { name: string }) => c.name),
-  }));
-
-  return {
-    content: [{ type: 'text', text: JSON.stringify({ total, count: tests.length, tests }, null, 2) }],
-  };
 }

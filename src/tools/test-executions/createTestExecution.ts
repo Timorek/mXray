@@ -21,49 +21,56 @@ export async function createTestExecution(
     test_keys?: string[];
   },
 ): Promise<MCPResponse> {
-  const fields: Record<string, unknown> = {
-    project: { key: args.project_key },
-    summary: args.summary,
-    issuetype: { name: 'Test Execution' },
-  };
+  try {
+    const fields: Record<string, unknown> = {
+      project: { key: args.project_key },
+      summary: args.summary,
+      issuetype: { name: 'Test Execution' },
+    };
 
-  if (args.description) {
-    fields.description = {
-      type: 'doc',
-      version: 1,
-      content: [{ type: 'paragraph', content: [{ type: 'text', text: args.description }] }],
+    if (args.description) {
+      fields.description = {
+        type: 'doc',
+        version: 1,
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: args.description }] }],
+      };
+    }
+
+    const response = await jiraClient.post('/issue', { fields });
+    const executionKey = response.data.key;
+    const executionId = response.data.id;
+
+    const result: Record<string, unknown> = {
+      key: executionKey,
+      id: executionId,
+      self: response.data.self,
+    };
+
+    // Add tests to the execution via Xray GraphQL if test_keys provided
+    if (args.test_keys && args.test_keys.length > 0 && xrayService) {
+      try {
+        // Resolve test keys to issue IDs
+        const testIssueIds: string[] = [];
+        for (const testKey of args.test_keys) {
+          const issueResponse = await jiraClient.get(`/issue/${testKey}`, { params: { fields: 'summary' } });
+          testIssueIds.push(issueResponse.data.id);
+        }
+
+        await xrayService.addTestsToTestExecution(executionId, testIssueIds);
+        result.tests_added = args.test_keys;
+      } catch (error: unknown) {
+        const message = formatApiError(error);
+        result.tests_add_warning = `Tests created but failed to add tests: ${message}`;
+      }
+    }
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+    };
+  } catch (error: unknown) {
+    return {
+      content: [{ type: 'text', text: formatApiError(error) }],
+      isError: true,
     };
   }
-
-  const response = await jiraClient.post('/issue', { fields });
-  const executionKey = response.data.key;
-  const executionId = response.data.id;
-
-  const result: Record<string, unknown> = {
-    key: executionKey,
-    id: executionId,
-    self: response.data.self,
-  };
-
-  // Add tests to the execution via Xray GraphQL if test_keys provided
-  if (args.test_keys && args.test_keys.length > 0 && xrayService) {
-    try {
-      // Resolve test keys to issue IDs
-      const testIssueIds: string[] = [];
-      for (const testKey of args.test_keys) {
-        const issueResponse = await jiraClient.get(`/issue/${testKey}`, { params: { fields: 'summary' } });
-        testIssueIds.push(issueResponse.data.id);
-      }
-
-      await xrayService.addTestsToTestExecution(executionId, testIssueIds);
-      result.tests_added = args.test_keys;
-    } catch (error: unknown) {
-      const message = formatApiError(error);
-      result.tests_add_warning = `Tests created but failed to add tests: ${message}`;
-    }
-  }
-
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
 }

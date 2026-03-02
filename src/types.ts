@@ -23,9 +23,8 @@ export type MCPResponse = {
 
 export type XrayTestType = 'Manual' | 'Cucumber' | 'Generic';
 
-export type TestStatus = 'TODO' | 'EXECUTING' | 'PASSED' | 'FAILED' | 'ABORTED';
-
-// ── Jira Types ──────────────────────────────────────────────────────────────
+// ── Domain Model Types ─────────────────────────────────────────────────────
+// These types document the Xray/Jira domain model and are available for future use.
 
 export interface JiraUser {
   accountId: string;
@@ -160,16 +159,4 @@ export interface TestImportResponse {
   key?: string;
   id?: string;
   self?: string;
-}
-
-export interface XrayPrecondition {
-  issueId: string;
-  jira: {
-    key: string;
-    summary: string;
-  };
-  definition: string;
-  preconditionType: {
-    name: string;
-  };
 }

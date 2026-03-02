@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { AxiosInstance } from 'axios';
 import type { MCPResponse } from '../../types.js';
+import { formatApiError } from '../../utils/errors.js';
 
 export const updateTestSchema = {
   test_key: z.string().describe('Jira issue key of the test (e.g. "PROJ-123")'),
@@ -20,31 +21,38 @@ export async function updateTest(
     components?: string[];
   },
 ): Promise<MCPResponse> {
-  const fields: Record<string, unknown> = {};
+  try {
+    const fields: Record<string, unknown> = {};
 
-  if (args.summary !== undefined) {
-    fields.summary = args.summary;
-  }
+    if (args.summary !== undefined) {
+      fields.summary = args.summary;
+    }
 
-  if (args.description !== undefined) {
-    fields.description = {
-      type: 'doc',
-      version: 1,
-      content: [{ type: 'paragraph', content: [{ type: 'text', text: args.description }] }],
+    if (args.description !== undefined) {
+      fields.description = {
+        type: 'doc',
+        version: 1,
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: args.description }] }],
+      };
+    }
+
+    if (args.labels) {
+      fields.labels = args.labels;
+    }
+
+    if (args.components) {
+      fields.components = args.components.map((name) => ({ name }));
+    }
+
+    await jiraClient.put(`/issue/${args.test_key}`, { fields });
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify({ success: true, key: args.test_key, updated_fields: Object.keys(fields) }, null, 2) }],
+    };
+  } catch (error: unknown) {
+    return {
+      content: [{ type: 'text', text: formatApiError(error) }],
+      isError: true,
     };
   }
-
-  if (args.labels) {
-    fields.labels = args.labels;
-  }
-
-  if (args.components) {
-    fields.components = args.components.map((name) => ({ name }));
-  }
-
-  await jiraClient.put(`/issue/${args.test_key}`, { fields });
-
-  return {
-    content: [{ type: 'text', text: JSON.stringify({ success: true, key: args.test_key, updated_fields: Object.keys(fields) }, null, 2) }],
-  };
 }

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { AxiosInstance } from 'axios';
 import type { MCPResponse } from '../../types.js';
+import { formatApiError } from '../../utils/errors.js';
 
 export const createTestPlanSchema = {
   project_key: z.string().describe('Jira project key (e.g. "PROJ")'),
@@ -12,23 +13,30 @@ export async function createTestPlan(
   jiraClient: AxiosInstance,
   args: { project_key: string; summary: string; description?: string },
 ): Promise<MCPResponse> {
-  const fields: Record<string, unknown> = {
-    project: { key: args.project_key },
-    summary: args.summary,
-    issuetype: { name: 'Test Plan' },
-  };
+  try {
+    const fields: Record<string, unknown> = {
+      project: { key: args.project_key },
+      summary: args.summary,
+      issuetype: { name: 'Test Plan' },
+    };
 
-  if (args.description) {
-    fields.description = {
-      type: 'doc',
-      version: 1,
-      content: [{ type: 'paragraph', content: [{ type: 'text', text: args.description }] }],
+    if (args.description) {
+      fields.description = {
+        type: 'doc',
+        version: 1,
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: args.description }] }],
+      };
+    }
+
+    const response = await jiraClient.post('/issue', { fields });
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify({ key: response.data.key, id: response.data.id, self: response.data.self }, null, 2) }],
+    };
+  } catch (error: unknown) {
+    return {
+      content: [{ type: 'text', text: formatApiError(error) }],
+      isError: true,
     };
   }
-
-  const response = await jiraClient.post('/issue', { fields });
-
-  return {
-    content: [{ type: 'text', text: JSON.stringify({ key: response.data.key, id: response.data.id, self: response.data.self }, null, 2) }],
-  };
 }

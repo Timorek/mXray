@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { XrayCloudService } from '../../services/XrayCloudService.js';
 import type { MCPResponse } from '../../types.js';
+import { formatApiError } from '../../utils/errors.js';
 
 export const getTestWithStepsSchema = {
   test_key: z.string().describe('Jira issue key of the test (e.g. "PROJ-123")'),
@@ -16,15 +17,22 @@ export async function getTestWithSteps(
     };
   }
 
-  const test = await xrayService.getTestWithSteps(args.test_key);
+  try {
+    const test = await xrayService.getTestWithSteps(args.test_key);
 
-  if (!test) {
+    if (!test) {
+      return {
+        content: [{ type: 'text', text: `Test ${args.test_key} not found in Xray.` }],
+      };
+    }
+
     return {
-      content: [{ type: 'text', text: `Test ${args.test_key} not found in Xray.` }],
+      content: [{ type: 'text', text: JSON.stringify(test, null, 2) }],
+    };
+  } catch (error: unknown) {
+    return {
+      content: [{ type: 'text', text: formatApiError(error) }],
+      isError: true,
     };
   }
-
-  return {
-    content: [{ type: 'text', text: JSON.stringify(test, null, 2) }],
-  };
 }

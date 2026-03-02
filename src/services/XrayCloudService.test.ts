@@ -77,44 +77,46 @@ describe('XrayCloudService', () => {
 
   describe('authenticate', () => {
     it('fetches a new token', async () => {
-      (axios.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: 'jwt-token-123' });
-
       const service = XrayCloudService.getInstance(validConfig);
+      const mockHttpClient = (axios.create as ReturnType<typeof vi.fn>).mock.results[0].value;
+      (mockHttpClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: 'jwt-token-123' });
+
       const token = await service.authenticate();
 
       expect(token).toBe('jwt-token-123');
-      expect(axios.post).toHaveBeenCalledWith(
-        'https://xray.cloud.getxray.app/api/v2/authenticate',
+      expect(mockHttpClient.post).toHaveBeenCalledWith(
+        '/authenticate',
         { client_id: 'client-id', client_secret: 'client-secret' },
       );
     });
 
     it('returns cached token on subsequent calls', async () => {
-      (axios.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: 'jwt-token-123' });
-
       const service = XrayCloudService.getInstance(validConfig);
+      const mockHttpClient = (axios.create as ReturnType<typeof vi.fn>).mock.results[0].value;
+      (mockHttpClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: 'jwt-token-123' });
+
       await service.authenticate();
       await service.authenticate();
 
-      expect(axios.post).toHaveBeenCalledTimes(1);
+      // Only one POST to /authenticate (first call), second uses cache
+      expect(mockHttpClient.post).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('token invalidation on 401', () => {
     it('invalidates token on 401 and re-authenticates on next call', async () => {
-      // Setup: create service and get initial token
-      (axios.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: 'token-1' });
       const service = XrayCloudService.getInstance(validConfig);
-      await service.authenticate();
-      expect(axios.post).toHaveBeenCalledTimes(1);
-
-      // Simulate a 401 error from the internal httpClient during a GraphQL call
       const mockHttpClient = (axios.create as ReturnType<typeof vi.fn>).mock.results[0].value;
+
+      // Setup: get initial token
+      (mockHttpClient.post as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: 'token-1' });
+      await service.authenticate();
+      expect(mockHttpClient.post).toHaveBeenCalledTimes(1);
+
+      // Simulate a 401 error from httpClient during a GraphQL call
       const axiosError = new Error('Unauthorized') as any;
       axiosError.response = { status: 401, data: 'Unauthorized' };
       axiosError.isAxiosError = true;
-      // Patch axios.isAxiosError to recognize our error
-      const origIsAxiosError = axios.isAxiosError;
 
       (mockHttpClient.post as ReturnType<typeof vi.fn>).mockRejectedValueOnce(axiosError);
 
@@ -126,12 +128,12 @@ describe('XrayCloudService', () => {
       }
 
       // Now authenticate again — should fetch a new token (not use cache)
-      (axios.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: 'token-2' });
+      (mockHttpClient.post as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: 'token-2' });
       const newToken = await service.authenticate();
 
       expect(newToken).toBe('token-2');
-      // authenticate was called: once initially + once after invalidation = 2
-      expect(axios.post).toHaveBeenCalledTimes(2);
+      // post calls: 1 (initial auth) + 1 (graphql that 401'd) + 1 (re-auth) = 3
+      expect(mockHttpClient.post).toHaveBeenCalledTimes(3);
     });
   });
 });

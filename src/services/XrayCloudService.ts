@@ -46,8 +46,8 @@ export class XrayCloudService {
       return this.token.token;
     }
 
-    const response = await axios.post<string>(
-      `${XRAY_BASE_URL}/authenticate`,
+    const response = await this.httpClient.post<string>(
+      '/authenticate',
       { client_id: this.clientId, client_secret: this.clientSecret },
     );
 
