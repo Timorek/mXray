@@ -6,11 +6,12 @@ import { formatApiError } from '../../utils/errors.js';
 export const importCucumberResultsSchema = {
   results: z.string().describe('Cucumber JSON format results string'),
   project_key: z.string().describe('Jira project key (e.g. "PROJ")'),
+  summary: z.string().optional().describe('Custom summary for the test execution (default: "Cucumber Test Execution")'),
 };
 
 export async function importCucumberResults(
   xrayService: XrayCloudService | null,
-  args: { results: string; project_key: string },
+  args: { results: string; project_key: string; summary?: string },
 ): Promise<MCPResponse> {
   if (!xrayService) {
     return {
@@ -20,7 +21,7 @@ export async function importCucumberResults(
 
   try {
     const parsed = JSON.parse(args.results);
-    const result = await xrayService.importCucumberResults(parsed, args.project_key);
+    const result = await xrayService.importCucumberResults(parsed, args.project_key, args.summary);
     return {
       content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
     };

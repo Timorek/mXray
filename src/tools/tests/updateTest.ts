@@ -22,7 +22,7 @@ export async function updateTest(
 ): Promise<MCPResponse> {
   const fields: Record<string, unknown> = {};
 
-  if (args.summary) {
+  if (args.summary !== undefined) {
     fields.summary = args.summary;
   }
 

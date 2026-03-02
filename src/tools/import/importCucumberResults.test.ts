@@ -21,7 +21,7 @@ describe('importCucumberResults', () => {
     const parsed = JSON.parse(result.content[0].text);
 
     expect(parsed.key).toBe('PROJ-500');
-    expect(mockXrayService.importCucumberResults).toHaveBeenCalledWith([{ keyword: 'Feature' }], 'PROJ');
+    expect(mockXrayService.importCucumberResults).toHaveBeenCalledWith([{ keyword: 'Feature' }], 'PROJ', undefined);
   });
 
   it('handles invalid JSON', async () => {

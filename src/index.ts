@@ -105,7 +105,7 @@ server.registerTool('get_test_with_steps', {
 server.registerTool('create_test', {
   description: 'Create a new test in Jira with specified type (Manual/Cucumber/Generic).',
   inputSchema: createTestSchema,
-}, async (args) => createTest(jiraClient, args));
+}, async (args) => createTest(jiraClient, xrayService, args));
 
 server.registerTool('update_test', {
   description: 'Update fields of an existing test in Jira.',

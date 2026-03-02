@@ -23,7 +23,7 @@ export type MCPResponse = {
 
 export type XrayTestType = 'Manual' | 'Cucumber' | 'Generic';
 
-export type TestStatus = 'TODO' | 'EXECUTING' | 'PASS' | 'FAIL' | 'ABORTED';
+export type TestStatus = 'TODO' | 'EXECUTING' | 'PASSED' | 'FAILED' | 'ABORTED';
 
 // ── Jira Types ──────────────────────────────────────────────────────────────
 

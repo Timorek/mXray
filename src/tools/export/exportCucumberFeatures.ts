@@ -25,7 +25,7 @@ export async function exportCucumberFeatures(
     const base64 = buffer.toString('base64');
 
     return {
-      content: [{ type: 'text', text: JSON.stringify({ format: 'zip', encoding: 'base64', data: base64 }, null, 2) }],
+      content: [{ type: 'text', text: JSON.stringify({ format: 'zip', encoding: 'base64', usage: 'Decode base64 and save as .zip to extract .feature files', data: base64 }, null, 2) }],
     };
   } catch (error: unknown) {
     const message = formatApiError(error);

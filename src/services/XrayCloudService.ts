@@ -291,14 +291,14 @@ export class XrayCloudService {
     }
   }
 
-  async importCucumberResults(results: unknown, projectKey?: string) {
+  async importCucumberResults(results: unknown, projectKey?: string, summary?: string) {
     const headers = await this.authHeaders();
     const boundary = '----XrayCucumberImport' + Date.now();
     const jsonStr = typeof results === 'string' ? results : JSON.stringify(results);
     const info = JSON.stringify({
       fields: {
         project: { key: projectKey ?? 'DEFAULT' },
-        summary: 'Cucumber Test Execution',
+        summary: summary ?? 'Cucumber Test Execution',
         issuetype: { name: 'Test Execution' },
       },
     });
