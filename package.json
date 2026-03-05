@@ -1,9 +1,12 @@
 {
   "name": "mxray-mcp-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP Server for Xray Test Management (Jira Cloud)",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "mxray-mcp-server": "dist/index.js"
+  },
   "files": [
     "dist",
     "samples",

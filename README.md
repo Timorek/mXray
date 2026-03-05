@@ -2,6 +2,10 @@
 
 An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that connects AI-powered IDEs to **Xray Test Management for Jira Cloud**. It exposes 27 test management tools over stdio, letting your AI assistant create and manage tests, test executions, test plans, test sets, and import/export test results — all without leaving your editor.
 
+```bash
+npx mxray-mcp-server
+```
+
 ## Prerequisites
 
 - **Node.js** ≥ 18
@@ -54,7 +58,43 @@ The server communicates over **stdio** and must be registered with your MCP-comp
 
 Add to `~/.copilot/mcp-config.json` (global) or `.copilot/mcp-config.json` (project-local):
 
-**Option A — inline credentials:**
+**Option A — via npx with inline credentials (no installation needed):**
+
+```json
+{
+  "mcpServers": {
+    "mxray": {
+      "command": "npx",
+      "args": ["-y", "mxray-mcp-server"],
+      "env": {
+        "JIRA_BASE_URL": "https://yourcompany.atlassian.net",
+        "JIRA_EMAIL": "your-email@company.com",
+        "JIRA_API_TOKEN": "your-jira-api-token",
+        "XRAY_CLIENT_ID": "your-xray-client-id",
+        "XRAY_CLIENT_SECRET": "your-xray-client-secret"
+      }
+    }
+  }
+}
+```
+
+**Option B — via npx loading from `.env` file (recommended):**
+
+Create a `.env` file with your credentials (see [Configuration](#configuration)), then point npx to the directory containing it:
+
+```json
+{
+  "mcpServers": {
+    "mxray": {
+      "command": "npx",
+      "args": ["-y", "mxray-mcp-server"],
+      "cwd": "/absolute/path/to/directory/containing/.env"
+    }
+  }
+}
+```
+
+**Option C — from local build:**
 
 ```json
 {
@@ -93,7 +133,41 @@ Add to `~/.copilot/mcp-config.json` (global) or `.copilot/mcp-config.json` (proj
 
 Add to `~/.claude/mcp_settings.json`:
 
-**Option A — inline credentials:**
+**Option A — via npx with inline credentials (no installation needed):**
+
+```json
+{
+  "mcpServers": {
+    "mxray": {
+      "command": "npx",
+      "args": ["-y", "mxray-mcp-server"],
+      "env": {
+        "JIRA_BASE_URL": "https://yourcompany.atlassian.net",
+        "JIRA_EMAIL": "your-email@company.com",
+        "JIRA_API_TOKEN": "your-jira-api-token",
+        "XRAY_CLIENT_ID": "your-xray-client-id",
+        "XRAY_CLIENT_SECRET": "your-xray-client-secret"
+      }
+    }
+  }
+}
+```
+
+**Option B — via npx loading from `.env` file (recommended):**
+
+```json
+{
+  "mcpServers": {
+    "mxray": {
+      "command": "npx",
+      "args": ["-y", "mxray-mcp-server"],
+      "cwd": "/absolute/path/to/directory/containing/.env"
+    }
+  }
+}
+```
+
+**Option C — from local build:**
 
 ```json
 {
