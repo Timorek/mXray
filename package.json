@@ -4,6 +4,26 @@
   "description": "MCP Server for Xray Test Management (Jira Cloud)",
   "type": "module",
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "samples",
+    ".env.example"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Timorek/mXray.git"
+  },
+  "author": "Arkadiusz Kłos (Timor) <klos.arkadiusz@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "xray",
+    "jira",
+    "test-management",
+    "model-context-protocol",
+    "cursor",
+    "claude"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
