@@ -1,14 +1,28 @@
 # mXray
 
-An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that connects AI-powered IDEs to **Xray Test Management for Jira Cloud**. It exposes 27 test management tools over stdio, letting your AI assistant create and manage tests, test executions, test plans, test sets, and import/export test results — all without leaving your editor.
+[![npm version](https://img.shields.io/npm/v/mxray-mcp-server)](https://www.npmjs.com/package/mxray-mcp-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js ≥ 20.6](https://img.shields.io/badge/node-%E2%89%A520.6-brightgreen)](https://nodejs.org/)
+
+An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that connects AI-powered IDEs to **Xray Test Management for Jira Cloud**. It exposes 28 test management tools over stdio, letting your AI assistant create and manage tests, test executions, test plans, test sets, and import/export test results — all without leaving your editor.
+
+> ⚠️ **Xray Cloud only.** This server targets the Xray Cloud REST and GraphQL APIs. Xray Server / Data Center use a different API and are not supported.
+
+## Quick Start
 
 ```bash
+# Run directly with npx — no installation needed
+JIRA_BASE_URL=https://yourcompany.atlassian.net \
+JIRA_EMAIL=you@company.com \
+JIRA_API_TOKEN=your-token \
 npx mxray-mcp-server
 ```
 
+For IDE integration, see the [Usage](#usage) section below.
+
 ## Prerequisites
 
-- **Node.js** ≥ 18
+- **Node.js** ≥ 20.6
 - A **Jira Cloud** account with the [Xray for Jira](https://www.getxray.app/) app installed
 - A **Jira API token** — generate one at [Atlassian account settings](https://id.atlassian.com/manage-profile/security/api-tokens)
 - _(Optional)_ **Xray Cloud API credentials** (client ID + secret) — required for Xray-specific tools such as fetching test steps, updating test runs, and importing/exporting results. Generate them in Xray → **Settings → API Keys**.
@@ -19,7 +33,7 @@ npx mxray-mcp-server
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-org/mXray.git
+git clone https://github.com/Timorek/mXray.git
 cd mXray
 
 # 2. Install dependencies
@@ -80,7 +94,7 @@ Add to `~/.copilot/mcp-config.json` (global) or `.copilot/mcp-config.json` (proj
 
 **Option B — via npx loading from `.env` file (recommended):**
 
-Create a `.env` file with your credentials (see [Configuration](#configuration)), then point npx to the directory containing it:
+Create a `.env` file with your credentials (see [Configuration](#configuration)), then set `cwd` to the **directory** containing the `.env` file (not the file itself):
 
 ```json
 {
@@ -88,13 +102,13 @@ Create a `.env` file with your credentials (see [Configuration](#configuration))
     "mxray": {
       "command": "npx",
       "args": ["-y", "mxray-mcp-server"],
-      "cwd": "/absolute/path/to/directory/containing/.env"
+      "cwd": "/absolute/path/to/mXray"
     }
   }
 }
 ```
 
-**Option C — from local build:**
+**Option C — from local build, inline credentials:**
 
 ```json
 {
@@ -114,7 +128,7 @@ Create a `.env` file with your credentials (see [Configuration](#configuration))
 }
 ```
 
-**Option B — load from `.env` file (recommended):**
+**Option D — from local build, loading from `.env` file (recommended):**
 
 ```json
 {
@@ -126,8 +140,6 @@ Create a `.env` file with your credentials (see [Configuration](#configuration))
   }
 }
 ```
-
-> `--env-file` is supported natively by Node.js ≥ 20.6. For Node 18/19, use the `.env` file approach by keeping a populated `.env` in the project root — the server loads it automatically via `dotenv`.
 
 ### Claude Code
 
@@ -155,19 +167,21 @@ Add to `~/.claude/mcp_settings.json`:
 
 **Option B — via npx loading from `.env` file (recommended):**
 
+Create a `.env` file with your credentials (see [Configuration](#configuration)), then set `cwd` to the **directory** containing the `.env` file (not the file itself):
+
 ```json
 {
   "mcpServers": {
     "mxray": {
       "command": "npx",
       "args": ["-y", "mxray-mcp-server"],
-      "cwd": "/absolute/path/to/directory/containing/.env"
+      "cwd": "/absolute/path/to/mXray"
     }
   }
 }
 ```
 
-**Option C — from local build:**
+**Option C — from local build, inline credentials:**
 
 ```json
 {
@@ -187,7 +201,7 @@ Add to `~/.claude/mcp_settings.json`:
 }
 ```
 
-**Option B — load from `.env` file (recommended):**
+**Option D — from local build, loading from `.env` file (recommended):**
 
 ```json
 {
@@ -199,14 +213,6 @@ Add to `~/.claude/mcp_settings.json`:
   }
 }
 ```
-
-### Development (no build required)
-
-```bash
-npm run dev
-```
-
-To use the dev server in an MCP config, replace `node dist/index.js` with `npx tsx src/index.ts`.
 
 ## Available Tools
 
@@ -255,16 +261,16 @@ Tools marked with *(Xray)* require `XRAY_CLIENT_ID` and `XRAY_CLIENT_SECRET`.
 
 All import tools require Xray credentials.
 
-| Tool | Format |
+| Tool | Description |
 |---|---|
-| `import_execution_results` | Xray JSON |
-| `import_cucumber_results` | Cucumber JSON |
-| `import_junit_results` | JUnit XML |
-| `import_testng_results` | TestNG XML |
-| `import_nunit_results` | NUnit XML |
-| `import_robot_results` | Robot Framework XML |
-| `import_behave_results` | Behave JSON |
-| `import_feature_file` | Gherkin `.feature` file |
+| `import_execution_results` | Import results in Xray JSON format |
+| `import_cucumber_results` | Import results in Cucumber JSON format |
+| `import_junit_results` | Import results in JUnit XML format |
+| `import_testng_results` | Import results in TestNG XML format |
+| `import_nunit_results` | Import results in NUnit XML format |
+| `import_robot_results` | Import results in Robot Framework XML format |
+| `import_behave_results` | Import results in Behave JSON format |
+| `import_feature_file` | Import a Gherkin `.feature` file to create/update tests |
 
 ### Export
 
@@ -283,6 +289,8 @@ npm run typecheck   # Type-check without emitting files
 npm test            # Run tests with Vitest
 npm run test:watch  # Run tests in watch mode
 ```
+
+To use the dev server in an MCP config, replace `node dist/index.js` with `npx tsx src/index.ts`.
 
 ## Project Structure
 

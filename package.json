@@ -18,6 +18,7 @@
   },
   "author": "Arkadiusz Kłos (Timor) <klos.arkadiusz@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/Timorek/mXray#readme",
   "keywords": [
     "mcp",
     "xray",
@@ -25,7 +26,11 @@
     "test-management",
     "model-context-protocol",
     "cursor",
-    "claude"
+    "claude",
+    "github-copilot",
+    "copilot",
+    "testing",
+    "qa"
   ],
   "scripts": {
     "build": "tsc",
@@ -36,7 +41,7 @@
     "typecheck": "tsc --noEmit"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.6"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.0",
